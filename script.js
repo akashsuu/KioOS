@@ -1,4 +1,3 @@
-javascript
 // KioOS
 // simple desktop system
 
@@ -439,16 +438,63 @@ const terminalInput =
 const terminalOutput =
     document.getElementById("terminal-output");
 
+const terminalBody =
+    document.querySelector(".terminal-body");
+
+const commandHistory = [];
+let historyIndex = -1;
+
 
 terminalInput.addEventListener("keydown", function (event) {
+
+    // Recall previous commands with the arrow keys
+    if (event.key === "ArrowUp") {
+
+        event.preventDefault();
+
+        if (commandHistory.length === 0) {
+            return;
+        }
+
+        if (historyIndex === -1) {
+            historyIndex = commandHistory.length - 1;
+        } else if (historyIndex > 0) {
+            historyIndex--;
+        }
+
+        terminalInput.value = commandHistory[historyIndex];
+
+        return;
+
+    }
+
+    if (event.key === "ArrowDown") {
+
+        event.preventDefault();
+
+        if (historyIndex === -1) {
+            return;
+        }
+
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            terminalInput.value = commandHistory[historyIndex];
+        } else {
+            historyIndex = -1;
+            terminalInput.value = "";
+        }
+
+        return;
+
+    }
 
     if (event.key !== "Enter") {
         return;
     }
 
 
-    const command =
-        terminalInput.value.trim().toLowerCase();
+    const rawCommand = terminalInput.value.trim();
+    const command = rawCommand.toLowerCase();
 
 
     if (command === "") {
@@ -457,14 +503,26 @@ terminalInput.addEventListener("keydown", function (event) {
 
 
     printTerminal(
-        "AKASH@KIOOS> " + command
+        "AKASH@KIOOS> " + rawCommand
     );
 
+    commandHistory.push(rawCommand);
+    historyIndex = -1;
 
     runCommand(command);
 
 
     terminalInput.value = "";
+
+});
+
+
+// Keep focus on the input, and scroll to the newest line
+document.getElementById("terminal-window").addEventListener("mousedown", function () {
+
+    setTimeout(function () {
+        terminalInput.focus();
+    }, 0);
 
 });
 
@@ -478,24 +536,43 @@ function printTerminal(text) {
 
     terminalOutput.appendChild(line);
 
+    terminalBody.scrollTop = terminalBody.scrollHeight;
+
 }
 
 
-function runCommand(command) {
+function runCommand(fullCommand) {
+
+    const parts = fullCommand.split(" ").filter(Boolean);
+    const command = parts[0];
+    const args = parts.slice(1);
+
 
     if (command === "help") {
 
         printTerminal("");
         printTerminal("AVAILABLE COMMANDS");
         printTerminal("------------------");
-        printTerminal("help");
-        printTerminal("clear");
-        printTerminal("date");
-        printTerminal("time");
-        printTerminal("whoami");
-        printTerminal("version");
-        printTerminal("about");
-        printTerminal("ls");
+        printTerminal("help              show this list");
+        printTerminal("clear             clear the screen");
+        printTerminal("date              show today's date");
+        printTerminal("time              show the current time");
+        printTerminal("whoami            show the current user");
+        printTerminal("version           show the OS version");
+        printTerminal("about             about KioOS");
+        printTerminal("ls                list files");
+        printTerminal("cd <dir>         change directory (.. for up)");
+        printTerminal("pwd               show current directory");
+        printTerminal("cat readme.txt    show a file");
+        printTerminal("echo <text>       print text back");
+        printTerminal("calc <sum>        evaluate a math expression");
+        printTerminal("open <app>        open an app (files, terminal,");
+        printTerminal("                  browser, notes, calculator,");
+        printTerminal("                  settings)");
+        printTerminal("neofetch          show system info");
+        printTerminal("history           show command history");
+        printTerminal("reboot            restart KioOS");
+        printTerminal("logout            lock the session");
 
     }
 
@@ -549,10 +626,206 @@ function runCommand(command) {
 
     else if (command === "ls") {
 
-        printTerminal("DOCUMENTS/");
-        printTerminal("PICTURES/");
-        printTerminal("DOWNLOADS/");
-        printTerminal("README.TXT");
+        const node = getNode(currentPath) || fileSystem;
+        const names = Object.keys(node.children || {}).sort();
+
+        if (names.length === 0) {
+
+            printTerminal("(empty folder)");
+
+        } else {
+
+            names.forEach(function (name) {
+
+                const child = node.children[name];
+                printTerminal(name + (child.type === "folder" ? "/" : ""));
+
+            });
+
+        }
+
+    }
+
+
+    else if (command === "cd") {
+
+        const target = args[0];
+
+        if (!target || target === "~") {
+
+            currentPath = [];
+
+        } else if (target === "..") {
+
+            currentPath.pop();
+
+        } else {
+
+            const node = getNode(currentPath);
+            const clean = target.toUpperCase();
+
+            if (node.children[clean] && node.children[clean].type === "folder") {
+
+                currentPath.push(clean);
+
+            } else {
+
+                printTerminal("NO SUCH DIRECTORY: " + target);
+                return;
+
+            }
+
+        }
+
+        renderFileArea();
+
+    }
+
+
+    else if (command === "pwd") {
+
+        printTerminal("/" + pathLabel(currentPath));
+
+    }
+
+
+    else if (command === "cat") {
+
+        const name = args.join(" ").trim().toUpperCase();
+        const node = getNode(currentPath) || fileSystem;
+
+        if (!name) {
+
+            printTerminal("USAGE: cat <filename>");
+
+        } else if (node.children[name] && node.children[name].type === "file") {
+
+            node.children[name].content.split("\n").forEach(function (line) {
+                printTerminal(line);
+            });
+
+        } else {
+
+            printTerminal("FILE NOT FOUND: " + name);
+
+        }
+
+    }
+
+
+    else if (command === "echo") {
+
+        printTerminal(args.join(" "));
+
+    }
+
+
+    else if (command === "calc") {
+
+        const expression = args.join(" ");
+
+        if (!expression) {
+
+            printTerminal("USAGE: calc <expression>");
+
+        } else if (!/^[0-9+\-*/. ()]+$/.test(expression)) {
+
+            printTerminal("ERROR: invalid characters");
+
+        } else {
+
+            try {
+
+                printTerminal(
+                    String(Function("return (" + expression + ")")())
+                );
+
+            } catch {
+
+                printTerminal("ERROR: could not evaluate");
+
+            }
+
+        }
+
+    }
+
+
+    else if (command === "open") {
+
+        const appName = args[0];
+
+        if (appName && appWindows[appName]) {
+
+            openApp(appName);
+            printTerminal("Opening " + appName.toUpperCase() + "...");
+
+        } else {
+
+            printTerminal("USAGE: open <files|terminal|browser|notes|calculator|settings>");
+
+        }
+
+    }
+
+
+    else if (command === "neofetch") {
+
+        printTerminal("");
+        printTerminal("  KioOS   -----------------");
+        printTerminal("  user:      AKASH");
+        printTerminal("  os:        KioOS v0.1");
+        printTerminal("  shell:     kiosh");
+        printTerminal("  uptime:    " + Math.floor(performance.now() / 1000) + "s");
+        printTerminal("  ----------------------------");
+
+    }
+
+
+    else if (command === "history") {
+
+        if (commandHistory.length === 0) {
+
+            printTerminal("(no commands yet)");
+
+        } else {
+
+            commandHistory.forEach(function (entry, index) {
+                printTerminal((index + 1) + "  " + entry);
+            });
+
+        }
+
+    }
+
+
+    else if (command === "reboot") {
+
+        printTerminal("Rebooting KioOS...");
+
+        setTimeout(function () {
+            location.reload();
+        }, 700);
+
+    }
+
+
+    else if (command === "logout") {
+
+        printTerminal("Locking session...");
+
+        setTimeout(function () {
+
+            document.getElementById("desktop").style.display = "none";
+            document.getElementById("login-screen").style.display = "flex";
+
+            const passwordField = document.getElementById("password");
+
+            if (passwordField) {
+                passwordField.focus();
+            }
+
+        }, 400);
 
     }
 
@@ -569,23 +842,426 @@ function runCommand(command) {
 
 
 // -------------------------
-// NOTES
+// VIRTUAL FILE SYSTEM
+// -------------------------
+
+const defaultFS = {
+    type: "folder",
+    children: {
+        "DOCUMENTS": { type: "folder", children: {} },
+        "PICTURES": { type: "folder", children: {} },
+        "DOWNLOADS": { type: "folder", children: {} },
+        "README.TXT": {
+            type: "file",
+            content:
+                "Welcome to KioOS.\n\n" +
+                "This is a personal web OS.\n" +
+                "Use FILES to browse and manage files.\n" +
+                "Use NOTEPAD to write and save text files."
+        }
+    }
+};
+
+
+function loadFS() {
+
+    try {
+
+        const saved = localStorage.getItem("kioos-fs");
+
+        if (saved) {
+            return JSON.parse(saved);
+        }
+
+    } catch (error) {
+
+        console.log("KioOS: could not load saved files", error);
+
+    }
+
+    return JSON.parse(JSON.stringify(defaultFS));
+
+}
+
+
+function saveFS() {
+
+    try {
+
+        localStorage.setItem(
+            "kioos-fs",
+            JSON.stringify(fileSystem)
+        );
+
+    } catch (error) {
+
+        console.log("KioOS: could not save files", error);
+
+    }
+
+}
+
+
+let fileSystem = loadFS();
+
+
+// Get the folder node at a path, e.g. ["DOCUMENTS"]
+function getNode(path) {
+
+    let node = fileSystem;
+
+    for (const part of path) {
+
+        if (!node.children || !node.children[part]) {
+            return null;
+        }
+
+        node = node.children[part];
+
+    }
+
+    return node;
+
+}
+
+
+function pathLabel(path) {
+
+    return path.length === 0 ? "HOME" : "HOME/" + path.join("/");
+
+}
+
+
+// -------------------------
+// FILE MANAGER
+// -------------------------
+
+let currentPath = [];
+let selectedName = null;
+
+const fileArea = document.getElementById("file-area");
+const filePathLabel = document.getElementById("file-path-label");
+
+
+function renderFileArea() {
+
+    const node = getNode(currentPath) || fileSystem;
+
+    selectedName = null;
+    fileArea.innerHTML = "";
+    filePathLabel.textContent = pathLabel(currentPath);
+
+    const names = Object.keys(node.children || {});
+
+    if (names.length === 0) {
+
+        const empty = document.createElement("div");
+
+        empty.style.color = "#477447";
+        empty.style.fontSize = "11px";
+        empty.style.padding = "10px";
+
+        empty.textContent = "(empty folder)";
+
+        fileArea.appendChild(empty);
+
+        return;
+
+    }
+
+    names.sort();
+
+    names.forEach(function (name) {
+
+        const child = node.children[name];
+
+        const item = document.createElement("div");
+        item.className = "file-item";
+        item.dataset.name = name;
+
+        const icon = document.createElement("div");
+        icon.className = "file-icon";
+        icon.textContent = child.type === "folder" ? "DIR" : "TXT";
+
+        const label = document.createElement("span");
+        label.textContent = name;
+
+        item.appendChild(icon);
+        item.appendChild(label);
+
+        item.addEventListener("click", function () {
+
+            fileArea.querySelectorAll(".file-item").forEach(function (el) {
+                el.classList.remove("selected");
+            });
+
+            item.classList.add("selected");
+            selectedName = name;
+
+        });
+
+        item.addEventListener("dblclick", function () {
+
+            if (child.type === "folder") {
+
+                currentPath.push(name);
+                renderFileArea();
+
+            } else {
+
+                openFileInEditor(currentPath.concat(name));
+
+            }
+
+        });
+
+        fileArea.appendChild(item);
+
+    });
+
+}
+
+
+document.querySelectorAll(".file-sidebar [data-path]").forEach(function (item) {
+
+    item.addEventListener("click", function () {
+
+        const raw = item.dataset.path;
+
+        currentPath = raw === "" ? [] : raw.split("/");
+
+        renderFileArea();
+
+    });
+
+});
+
+
+document.getElementById("fm-up").addEventListener("click", function () {
+
+    if (currentPath.length > 0) {
+
+        currentPath.pop();
+        renderFileArea();
+
+    }
+
+});
+
+
+document.getElementById("fm-new-folder").addEventListener("click", function () {
+
+    const name = prompt("Folder name:");
+
+    if (!name) {
+        return;
+    }
+
+    const clean = name.trim().toUpperCase();
+    const node = getNode(currentPath);
+
+    if (!clean || node.children[clean]) {
+
+        alert("Enter a unique folder name.");
+        return;
+
+    }
+
+    node.children[clean] = { type: "folder", children: {} };
+
+    saveFS();
+    renderFileArea();
+
+});
+
+
+document.getElementById("fm-new-file").addEventListener("click", function () {
+
+    let name = prompt("File name:", "UNTITLED.TXT");
+
+    if (!name) {
+        return;
+    }
+
+    let clean = name.trim().toUpperCase();
+
+    if (!clean.includes(".")) {
+        clean += ".TXT";
+    }
+
+    const node = getNode(currentPath);
+
+    if (node.children[clean]) {
+
+        alert("A file with that name already exists.");
+        return;
+
+    }
+
+    node.children[clean] = { type: "file", content: "" };
+
+    saveFS();
+    renderFileArea();
+
+});
+
+
+document.getElementById("fm-delete").addEventListener("click", function () {
+
+    if (!selectedName) {
+
+        alert("Select a file or folder first.");
+        return;
+
+    }
+
+    if (!confirm("Delete " + selectedName + "?")) {
+        return;
+    }
+
+    const node = getNode(currentPath);
+
+    delete node.children[selectedName];
+
+    saveFS();
+    renderFileArea();
+
+});
+
+
+renderFileArea();
+
+
+// -------------------------
+// NOTES / TEXT EDITOR
 // -------------------------
 
 const notesArea =
     document.getElementById("notes-area");
 
+const editorFilenameInput =
+    document.getElementById("editor-filename");
 
-notesArea.value =
-    localStorage.getItem("kioos-notes") || "";
+const editorStatus =
+    document.getElementById("editor-status");
+
+let editorFolderPath = [];
 
 
-notesArea.addEventListener("input", function () {
+function setEditorStatus(text) {
 
-    localStorage.setItem(
-        "kioos-notes",
-        notesArea.value
+    editorStatus.textContent = text;
+
+}
+
+
+function openFileInEditor(pathToFile) {
+
+    const folderPath = pathToFile.slice(0, -1);
+    const name = pathToFile[pathToFile.length - 1];
+
+    const folder = getNode(folderPath);
+    const file = folder && folder.children[name];
+
+    if (!file || file.type !== "file") {
+        return;
+    }
+
+    editorFolderPath = folderPath;
+    editorFilenameInput.value = name;
+    notesArea.value = file.content;
+
+    setEditorStatus("Opened " + pathLabel(folderPath) + "/" + name);
+
+    openApp("notes");
+
+}
+
+
+function saveCurrentFile() {
+
+    let name = editorFilenameInput.value.trim().toUpperCase();
+
+    if (!name) {
+
+        alert("Enter a filename.");
+        return;
+
+    }
+
+    if (!name.includes(".")) {
+        name += ".TXT";
+    }
+
+    editorFilenameInput.value = name;
+
+    const folder = getNode(editorFolderPath) || fileSystem;
+
+    folder.children[name] = {
+        type: "file",
+        content: notesArea.value
+    };
+
+    saveFS();
+
+    setEditorStatus(
+        "Saved " + pathLabel(editorFolderPath) + "/" + name +
+        " at " + new Date().toLocaleTimeString()
     );
+
+    // Refresh the file manager if it is showing this folder
+    if (currentPath.join("/") === editorFolderPath.join("/")) {
+        renderFileArea();
+    }
+
+}
+
+
+document.getElementById("editor-new").addEventListener("click", function () {
+
+    notesArea.value = "";
+    editorFilenameInput.value = "UNTITLED.TXT";
+    editorFolderPath = [];
+
+    setEditorStatus("New file");
+
+});
+
+
+document.getElementById("editor-save").addEventListener("click", saveCurrentFile);
+
+
+document.getElementById("editor-download").addEventListener("click", async function () {
+
+    let name = editorFilenameInput.value.trim().toUpperCase();
+
+    if (!name.includes(".")) {
+        name += ".TXT";
+    }
+
+    const downloads = await claude.use("downloads");
+
+    if (!downloads) {
+
+        setEditorStatus("Downloads aren't available in this view.");
+        return;
+
+    }
+
+    try {
+
+        await downloads.save({
+            filename: name,
+            data: notesArea.value
+        });
+
+        setEditorStatus("Downloaded " + name);
+
+    } catch (error) {
+
+        setEditorStatus("Download cancelled");
+
+    }
 
 });
 

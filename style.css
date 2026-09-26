@@ -508,6 +508,73 @@ body {
 }
 
 
+.file-main {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+.file-toolbar {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    padding: 6px 10px;
+
+    background: #0a140a;
+
+    border-bottom: 2px solid #4f914f;
+
+    font-size: 11px;
+
+    color: #7ccf7c;
+}
+
+
+.file-toolbar-buttons {
+    display: flex;
+
+    gap: 4px;
+}
+
+
+.file-toolbar-buttons button {
+    padding: 5px 8px;
+
+    border: 2px solid #579657;
+
+    background: #1b3d1b;
+
+    color: #baffba;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+
+.file-toolbar-buttons button:hover {
+    background: #386838;
+
+    color: white;
+}
+
+
+.file-item.selected {
+    background: #315d31;
+
+    outline: 1px solid #baffba;
+}
+
+
 .file-sidebar {
     width: 170px;
 
@@ -717,9 +784,76 @@ body {
    NOTEPAD
    ========================================= */
 
+.editor-toolbar {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    padding: 6px 10px;
+
+    background: #0a140a;
+
+    border-bottom: 2px solid #4f914f;
+}
+
+
+#editor-filename {
+    flex: 1;
+    min-width: 0;
+
+    padding: 5px 7px;
+
+    border: 2px solid #579657;
+
+    outline: none;
+
+    background: #030603;
+
+    color: #baffba;
+
+    font-family: inherit;
+
+    font-size: 12px;
+}
+
+
+.editor-toolbar-buttons {
+    display: flex;
+
+    gap: 4px;
+}
+
+
+.editor-toolbar-buttons button {
+    padding: 5px 8px;
+
+    border: 2px solid #579657;
+
+    background: #1b3d1b;
+
+    color: #baffba;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+
+.editor-toolbar-buttons button:hover {
+    background: #386838;
+
+    color: white;
+}
+
+
 #notes-area {
     width: 100%;
-    height: calc(100% - 34px);
+    height: calc(100% - 34px - 36px - 20px);
 
     resize: none;
 
@@ -736,6 +870,22 @@ body {
     font-family: "Courier New", monospace;
 
     font-size: 14px;
+}
+
+
+#editor-status {
+    height: 20px;
+
+    padding: 2px 10px;
+
+    background: #0a140a;
+
+    color: #7ccf7c;
+
+    font-size: 11px;
+
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 

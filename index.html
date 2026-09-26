@@ -124,35 +124,30 @@
 
                 <aside class="file-sidebar">
 
-                    <div>MY COMPUTER</div>
-                    <div>HOME</div>
-                    <div>DOCUMENTS</div>
-                    <div>PICTURES</div>
-                    <div>DOWNLOADS</div>
+                    <div data-path="">MY COMPUTER</div>
+                    <div data-path="">HOME</div>
+                    <div data-path="DOCUMENTS">DOCUMENTS</div>
+                    <div data-path="PICTURES">PICTURES</div>
+                    <div data-path="DOWNLOADS">DOWNLOADS</div>
 
                 </aside>
 
-                <div class="file-area">
+                <div class="file-main">
 
-                    <div class="file-item">
-                        <div class="file-icon">DIR</div>
-                        <span>DOCUMENTS</span>
+                    <div class="file-toolbar">
+
+                        <span id="file-path-label">HOME</span>
+
+                        <div class="file-toolbar-buttons">
+                            <button id="fm-up">UP</button>
+                            <button id="fm-new-folder">NEW FOLDER</button>
+                            <button id="fm-new-file">NEW FILE</button>
+                            <button id="fm-delete">DELETE</button>
+                        </div>
+
                     </div>
 
-                    <div class="file-item">
-                        <div class="file-icon">DIR</div>
-                        <span>PICTURES</span>
-                    </div>
-
-                    <div class="file-item">
-                        <div class="file-icon">DIR</div>
-                        <span>DOWNLOADS</span>
-                    </div>
-
-                    <div class="file-item">
-                        <div class="file-icon">TXT</div>
-                        <span>README.TXT</span>
-                    </div>
+                    <div class="file-area" id="file-area"></div>
 
                 </div>
 
@@ -252,10 +247,24 @@
                 </div>
             </div>
 
+            <div class="editor-toolbar">
+
+                <input type="text" id="editor-filename" value="UNTITLED.TXT">
+
+                <div class="editor-toolbar-buttons">
+                    <button id="editor-new">NEW</button>
+                    <button id="editor-save">SAVE</button>
+                    <button id="editor-download">DOWNLOAD</button>
+                </div>
+
+            </div>
+
             <textarea
                 id="notes-area"
                 placeholder="TYPE SOMETHING..."
             ></textarea>
+
+            <div id="editor-status"></div>
 
         </section>
 
