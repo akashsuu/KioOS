@@ -62,6 +62,6 @@ Default demo password:
 
 KioOS is a personal project made for learning web development and experimenting with the idea of building an operating system inside a browser.
 
-Made with ❤️ and a little bit of meow.
+Made with and a little bit of meow.
 
-**KioOS — Kio speak meow 🐱**
+**KioOS — Kio speak meow **
