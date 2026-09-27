@@ -2,26 +2,19 @@ let activeWindow = null;
 let highestZ = 10;
 
 window.addEventListener("load", function () {
-    const bootScreen = document.getElementById("boot-screen");
-    const loginScreen = document.getElementById("login-screen");
-    const desktop = document.getElementById("desktop");
 
+    let boot = document.getElementById("boot-screen");
+    let desktop = document.getElementById("desktop");
+
+    boot.style.display = "flex";
     desktop.style.display = "none";
-    loginScreen.style.display = "none";
-    bootScreen.style.display = "flex";
 
     setTimeout(function () {
-        bootScreen.style.display = "none";
-        loginScreen.style.display = "flex";
+        boot.style.display = "none";
+        desktop.style.display = "block";
     }, 2000);
+
 });
-
-document.getElementById("login-button").addEventListener("click", login);
-
-function login() {
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("desktop").style.display = "block";
-}
 
 const appWindows = {
     files: "files-window",
@@ -875,3 +868,4 @@ document.addEventListener("keydown", function (event) {
         startMenu.style.display = "none";
     }
 });
+
