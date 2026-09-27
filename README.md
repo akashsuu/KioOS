@@ -35,7 +35,7 @@ The terminal has commands like:
 
 ![KioOS Desktop](pv1.png)
 
-### File Manager
+### Apps
 
 ![KioOS Files](pv2.png)
 
@@ -43,9 +43,6 @@ The terminal has commands like:
 
 ![KioOS Terminal](pv3.png)
 
-### Apps
-
-![KioOS Apps](pv4.png)
 
 ## Built With
 
