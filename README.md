@@ -71,4 +71,4 @@ It's not meant to replace a real OS. It's just a little OS that lives in a brows
 
 Made with code, curiosity, and a little bit of meow.
 
-**KioOS — Kio speaks meow. 🐱**
+**KioOS — Kio speaks meow. **
