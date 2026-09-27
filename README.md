@@ -1,67 +1,77 @@
 # KioOS
 
-A small retro-style web operating system made with HTML, CSS and JavaScript.
+![KioOS](pv1.png)
 
-KioOS is a fun browser-based OS project inspired by old-school computer interfaces.
+A small retro-style web OS I built using HTML, CSS and JavaScript.
+
+KioOS is basically my attempt at making a little computer inside a browser. It has windows, apps, a terminal, files and a desktop that all work together.
 
 ## Features
 
-* Retro pixel-style interface
+* Retro-style desktop
 * Boot screen
-* Login screen
-* Desktop environment
-* File Manager
+* File manager
 * Terminal
-* Web Browser
+* Browser
 * Notepad
 * Calculator
-* System Settings
-* Taskbar
+* Settings
 * Start menu
+* Taskbar
 * Virtual file system
 * Command history
+* Draggable windows
+* LocalStorage support
 
-The terminal includes commands such as `help`, `ls`, `cd`, `pwd`, `cat`, `calc`, `open`, `neofetch`, `history`, `reboot`, and `logout`.
+### Terminal
 
-## Tech Used
+The terminal has commands like:
 
-* HTML
-* CSS
-* JavaScript
-* LocalStorage
+`help` `ls` `cd` `pwd` `cat` `calc` `open` `neofetch` `history` `reboot`
 
-## Project Structure
+## Screenshots
 
-```text
-KioOS/
-├── index.html
-├── style.css
-├── script.js
-└── README.md
-```
+### Desktop
 
-## Run Locally
+![KioOS Desktop](pv1.png)
 
-Clone the repository:
+### File Manager
+
+![KioOS Files](pv2.png)
+
+### Terminal
+
+![KioOS Terminal](pv3.png)
+
+### Apps
+
+![KioOS Apps](pv4.png)
+
+## Built With
+
+![HTML5](https://img.shields.io/badge/HTML5-orange?style=flat-square\&logo=html5\&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-blue?style=flat-square\&logo=css3\&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-yellow?style=flat-square\&logo=javascript\&logoColor=black)
+![LocalStorage](https://img.shields.io/badge/Storage-LocalStorage-lightgrey?style=flat-square)
+
+## Run It
+
+Clone the repo:
 
 ```bash
 git clone https://github.com/akashsuu/KioOS.git
 ```
 
-Open the project folder and run `index.html` with VS Code Live Server.
+Then open `index.html` with VS Code Live Server.
 
-## Login
-
-Default demo password:
-
-```text
-1234
-```
+No build tools or frameworks are needed.
 
 ## About
 
-KioOS is a personal project made for learning web development and experimenting with the idea of building an operating system inside a browser.
+I made KioOS while experimenting with HTML, CSS and JavaScript. The fun part was trying to make a bunch of small browser features feel like an actual operating system.
 
-Made with and a little bit of meow.
+It's not meant to replace a real OS. It's just a little OS that lives in a browser.
 
-**KioOS — Kio speak meow **
+Made with code, curiosity, and a little bit of meow.
+
+**KioOS — Kio speaks meow. 🐱**
