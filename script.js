@@ -1,7 +1,6 @@
 let activeWindow = null;
 let highestZ = 10;
 
-
 /* BOOT */
 
 window.addEventListener("load", function () {
@@ -17,7 +16,6 @@ window.addEventListener("load", function () {
     }, 2000);
 });
 
-
 /* APPS */
 
 const apps = {
@@ -29,28 +27,29 @@ const apps = {
     settings: "settings-window"
 };
 
-
 document.querySelectorAll("[data-app]").forEach(function (item) {
     item.addEventListener("dblclick", function () {
         openApp(item.dataset.app);
     });
 });
 
+function openApp(appName) {
+    const windowId = apps[appName];
 
-function openApp(appName){
-    const windowId=apps[appName];
-    if(!windowId)return;
+    if (!windowId) {
+        return;
+    }
 
-    const win=document.getElementById(windowId);
-    win.style.display="block";
+    const win = document.getElementById(windowId);
+
+    win.style.display = "block";
 
     highestZ++;
-    win.style.zIndex=highestZ;
-    activeWindow=win;
+    win.style.zIndex = highestZ;
+    activeWindow = win;
 
     addTaskbarApp(appName);
 }
-
 
 /* START MENU */
 
@@ -65,7 +64,6 @@ startButton.addEventListener("click", function () {
     }
 });
 
-
 document.querySelectorAll("#start-menu [data-app]").forEach(function (button) {
     button.addEventListener("click", function () {
         openApp(button.dataset.app);
@@ -73,11 +71,9 @@ document.querySelectorAll("#start-menu [data-app]").forEach(function (button) {
     });
 });
 
-
 /* WINDOW BUTTONS */
 
 document.querySelectorAll(".window").forEach(function (win) {
-
     let buttons = win.querySelectorAll(".window-buttons button");
 
     // close
@@ -108,48 +104,51 @@ document.querySelectorAll(".window").forEach(function (win) {
     });
 });
 
-
 /* TASKBAR */
 
-function addTaskbarApp(name){
-    let id=apps[name];
+function addTaskbarApp(name) {
+    let id = apps[name];
 
-    if(document.querySelector('[data-task="'+id+'"]'))return;
+    if (document.querySelector('[data-task="' + id + '"]')) {
+        return;
+    }
 
-    let icons={
-        files:"icon/icons8-file-128.png",
-        calculator:"icon/icons8-calculator-48.png",
-        terminal:"icon/icons8-terminal-50.png",
-        settings:"icon/icons8-setting-50.png",
-        browser:"icon/icons8-browser-50.png",
-        notes:"icon/icons8-note-50.png"
+    let icons = {
+        files: "icon/icons8-file-128.png",
+        calculator: "icon/icons8-calculator-48.png",
+        terminal: "icon/icons8-terminal-50.png",
+        settings: "icon/icons8-setting-50.png",
+        browser: "icon/icons8-browser-50.png",
+        notes: "icon/icons8-note-50.png"
     };
 
-    let button=document.createElement("button");
-    button.className="taskbar-app";
-    button.dataset.task=id;
+    let button = document.createElement("button");
 
-    let img=document.createElement("img");
-    img.src=icons[name];
-    img.alt=name;
+    button.className = "taskbar-app";
+    button.dataset.task = id;
+
+    let img = document.createElement("img");
+
+    img.src = icons[name];
+    img.alt = name;
 
     button.appendChild(img);
 
-    button.addEventListener("click",function(){
-        let win=document.getElementById(id);
+    button.addEventListener("click", function () {
+        let win = document.getElementById(id);
 
-        if(win.style.display==="none"){
-            win.style.display="block";
+        if (win.style.display === "none") {
+            win.style.display = "block";
+
             highestZ++;
-            win.style.zIndex=highestZ;
-        }else{
-            win.style.display="none";
+            win.style.zIndex = highestZ;
+        } else {
+            win.style.display = "none";
         }
     });
 
     document.getElementById("taskbar-apps").appendChild(button);
 }
-
 
 function removeTaskbarApp(id) {
     let button = document.querySelector('[data-task="' + id + '"]');
@@ -159,11 +158,9 @@ function removeTaskbarApp(id) {
     }
 }
 
-
 /* DRAG WINDOWS */
 
 document.querySelectorAll(".window").forEach(function (win) {
-
     let title = win.querySelector(".window-title");
 
     let dragging = false;
@@ -171,7 +168,6 @@ document.querySelectorAll(".window").forEach(function (win) {
     let mouseY = 0;
 
     title.addEventListener("mousedown", function (event) {
-
         if (event.target.tagName === "BUTTON") {
             return;
         }
@@ -189,9 +185,7 @@ document.querySelectorAll(".window").forEach(function (win) {
         win.style.zIndex = highestZ;
     });
 
-
     document.addEventListener("mousemove", function (event) {
-
         if (!dragging) {
             return;
         }
@@ -222,17 +216,14 @@ document.querySelectorAll(".window").forEach(function (win) {
         win.style.top = y + "px";
     });
 
-
     document.addEventListener("mouseup", function () {
         dragging = false;
     });
 });
 
-
 /* CLOCK */
 
 function updateClock() {
-
     let clock = document.getElementById("clock");
     let now = new Date();
 
@@ -254,7 +245,6 @@ updateClock();
 
 setInterval(updateClock, 1000);
 
-
 /* TERMINAL */
 
 let terminalInput = document.getElementById("terminal-input");
@@ -264,12 +254,9 @@ let terminalBody = document.querySelector(".terminal-body");
 let history = [];
 let historyIndex = -1;
 
-
 terminalInput.addEventListener("keydown", function (event) {
-
     // previous command
     if (event.key === "ArrowUp") {
-
         event.preventDefault();
 
         if (history.length === 0) {
@@ -287,10 +274,8 @@ terminalInput.addEventListener("keydown", function (event) {
         return;
     }
 
-
     // next command
     if (event.key === "ArrowDown") {
-
         event.preventDefault();
 
         if (historyIndex === -1) {
@@ -307,7 +292,6 @@ terminalInput.addEventListener("keydown", function (event) {
 
         return;
     }
-
 
     // enter
     if (event.key !== "Enter") {
@@ -330,16 +314,13 @@ terminalInput.addEventListener("keydown", function (event) {
     terminalInput.value = "";
 });
 
-
 document.getElementById("terminal-window").addEventListener("mousedown", function () {
     setTimeout(function () {
         terminalInput.focus();
     }, 0);
 });
 
-
 function printTerminal(text) {
-
     let line = document.createElement("div");
 
     line.textContent = text;
@@ -349,16 +330,12 @@ function printTerminal(text) {
     terminalBody.scrollTop = terminalBody.scrollHeight;
 }
 
-
 function runCommand(text) {
-
     let parts = text.split(" ");
     let command = parts[0];
     let args = parts.slice(1);
 
-
     if (command === "help") {
-
         printTerminal("");
         printTerminal("KioOS COMMANDS");
         printTerminal("----------------");
@@ -379,76 +356,46 @@ function runCommand(text) {
         printTerminal("neofetch   system info");
         printTerminal("history    command history");
         printTerminal("reboot     restart KioOS");
-
     } else if (command === "clear") {
-
         terminalOutput.innerHTML = "";
-
     } else if (command === "date") {
-
         printTerminal(new Date().toDateString());
-
     } else if (command === "time") {
-
         printTerminal(new Date().toLocaleTimeString());
-
     } else if (command === "whoami") {
-
         printTerminal("AKASH");
-
     } else if (command === "version") {
-
         printTerminal("KioOS v0.1");
-
     } else if (command === "about") {
-
         printTerminal("KioOS personal web operating system.");
         printTerminal("Made with HTML, CSS and JavaScript.");
-
     } else if (command === "ls") {
-
         listFiles();
-
     } else if (command === "cd") {
-
         changeFolder(args[0]);
-
     } else if (command === "pwd") {
-
         printTerminal("/" + pathName(currentPath));
-
     } else if (command === "cat") {
-
         readFile(args.join(" "));
-
     } else if (command === "echo") {
-
         printTerminal(args.join(" "));
-
     } else if (command === "calc") {
-
         calculateTerminal(args.join(" "));
-
     } else if (command === "open") {
-
         if (args[0] && apps[args[0]]) {
             openApp(args[0]);
             printTerminal("Opening " + args[0].toUpperCase());
         } else {
             printTerminal("Use: open files");
         }
-
     } else if (command === "neofetch") {
-
         printTerminal("");
         printTerminal("KioOS");
         printTerminal("user: AKASH");
         printTerminal("version: 0.1");
         printTerminal("shell: kiosh");
         printTerminal("uptime: " + Math.floor(performance.now() / 1000) + "s");
-
     } else if (command === "history") {
-
         if (history.length === 0) {
             printTerminal("No commands yet");
         } else {
@@ -456,21 +403,16 @@ function runCommand(text) {
                 printTerminal(index + 1 + "  " + item);
             });
         }
-
     } else if (command === "reboot") {
-
         printTerminal("Rebooting KioOS...");
 
         setTimeout(function () {
             location.reload();
         }, 700);
-
     } else {
-
         printTerminal("COMMAND NOT FOUND: " + command);
     }
 }
-
 
 /* FILE SYSTEM */
 
@@ -478,7 +420,6 @@ const defaultFS = {
     type: "folder",
 
     children: {
-
         DOCUMENTS: {
             type: "folder",
             children: {}
@@ -506,9 +447,7 @@ const defaultFS = {
     }
 };
 
-
 function loadFiles() {
-
     let saved = localStorage.getItem("kioos-fs");
 
     if (saved) {
@@ -522,9 +461,7 @@ function loadFiles() {
     return JSON.parse(JSON.stringify(defaultFS));
 }
 
-
 function saveFiles() {
-
     try {
         localStorage.setItem(
             "kioos-fs",
@@ -535,18 +472,14 @@ function saveFiles() {
     }
 }
 
-
 let fileSystem = loadFiles();
 let currentPath = [];
 let selectedName = null;
 
-
 function getNode(path) {
-
     let node = fileSystem;
 
     for (let part of path) {
-
         if (!node.children || !node.children[part]) {
             return null;
         }
@@ -557,9 +490,7 @@ function getNode(path) {
     return node;
 }
 
-
 function pathName(path) {
-
     if (path.length === 0) {
         return "HOME";
     }
@@ -567,11 +498,9 @@ function pathName(path) {
     return "HOME/" + path.join("/");
 }
 
-
 /* TERMINAL FILE COMMANDS */
 
 function listFiles() {
-
     let node = getNode(currentPath);
 
     if (!node) {
@@ -588,7 +517,6 @@ function listFiles() {
     names.sort();
 
     names.forEach(function (name) {
-
         let item = node.children[name];
 
         if (item.type === "folder") {
@@ -599,9 +527,7 @@ function listFiles() {
     });
 }
 
-
 function changeFolder(name) {
-
     if (!name || name === "~") {
         currentPath = [];
         renderFiles();
@@ -609,7 +535,6 @@ function changeFolder(name) {
     }
 
     if (name === "..") {
-
         if (currentPath.length > 0) {
             currentPath.pop();
         }
@@ -621,21 +546,18 @@ function changeFolder(name) {
     let node = getNode(currentPath);
     let folder = name.toUpperCase();
 
-    if (node.children[folder] &&
-        node.children[folder].type === "folder") {
-
+    if (
+        node.children[folder] &&
+        node.children[folder].type === "folder"
+    ) {
         currentPath.push(folder);
         renderFiles();
-
     } else {
-
         printTerminal("NO SUCH DIRECTORY: " + name);
     }
 }
 
-
 function readFile(name) {
-
     name = name.trim().toUpperCase();
 
     if (!name) {
@@ -645,24 +567,21 @@ function readFile(name) {
 
     let node = getNode(currentPath);
 
-    if (node.children[name] &&
-        node.children[name].type === "file") {
-
+    if (
+        node.children[name] &&
+        node.children[name].type === "file"
+    ) {
         let text = node.children[name].content;
 
         text.split("\n").forEach(function (line) {
             printTerminal(line);
         });
-
     } else {
-
         printTerminal("FILE NOT FOUND: " + name);
     }
 }
 
-
 function calculateTerminal(expression) {
-
     if (!expression) {
         printTerminal("Use: calc 5+5");
         return;
@@ -674,28 +593,22 @@ function calculateTerminal(expression) {
     }
 
     try {
-
         let answer = Function(
             "return (" + expression + ")"
         )();
 
         printTerminal(String(answer));
-
     } catch {
-
         printTerminal("ERROR");
     }
 }
-
 
 /* FILE MANAGER */
 
 let fileArea = document.getElementById("file-area");
 let filePathLabel = document.getElementById("file-path-label");
 
-
 function renderFiles() {
-
     let node = getNode(currentPath);
 
     if (!node) {
@@ -710,9 +623,7 @@ function renderFiles() {
 
     let names = Object.keys(node.children || {});
 
-
     if (names.length === 0) {
-
         let empty = document.createElement("div");
 
         empty.textContent = "(empty folder)";
@@ -724,19 +635,15 @@ function renderFiles() {
         return;
     }
 
-
     names.sort();
 
-
     names.forEach(function (name) {
-
         let file = node.children[name];
 
         let item = document.createElement("div");
 
         item.className = "file-item";
         item.dataset.name = name;
-
 
         let icon = document.createElement("div");
 
@@ -748,18 +655,14 @@ function renderFiles() {
             icon.textContent = "TXT";
         }
 
-
         let label = document.createElement("span");
 
         label.textContent = name;
 
-
         item.appendChild(icon);
         item.appendChild(label);
 
-
         item.addEventListener("click", function () {
-
             document.querySelectorAll(".file-item").forEach(function (other) {
                 other.classList.remove("selected");
             });
@@ -769,33 +672,23 @@ function renderFiles() {
             selectedName = name;
         });
 
-
         item.addEventListener("dblclick", function () {
-
             if (file.type === "folder") {
-
                 currentPath.push(name);
-
                 renderFiles();
-
             } else {
-
                 openFile(name);
             }
         });
-
 
         fileArea.appendChild(item);
     });
 }
 
-
 /* FILE SIDEBAR */
 
 document.querySelectorAll(".file-sidebar [data-path]").forEach(function (item) {
-
     item.addEventListener("click", function () {
-
         let path = item.dataset.path;
 
         if (path === "") {
@@ -808,22 +701,18 @@ document.querySelectorAll(".file-sidebar [data-path]").forEach(function (item) {
     });
 });
 
-
 /* UP BUTTON */
 
 document.getElementById("fm-up").addEventListener("click", function () {
-
     if (currentPath.length > 0) {
         currentPath.pop();
         renderFiles();
     }
 });
 
-
 /* NEW FOLDER */
 
 document.getElementById("fm-new-folder").addEventListener("click", function () {
-
     let name = prompt("Folder name:");
 
     if (!name) {
@@ -848,11 +737,9 @@ document.getElementById("fm-new-folder").addEventListener("click", function () {
     renderFiles();
 });
 
-
 /* NEW FILE */
 
 document.getElementById("fm-new-file").addEventListener("click", function () {
-
     let name = prompt("File name:", "UNTITLED.TXT");
 
     if (!name) {
@@ -881,11 +768,9 @@ document.getElementById("fm-new-file").addEventListener("click", function () {
     renderFiles();
 });
 
-
 /* DELETE */
 
 document.getElementById("fm-delete").addEventListener("click", function () {
-
     if (!selectedName) {
         alert("Select a file first.");
         return;
@@ -905,9 +790,7 @@ document.getElementById("fm-delete").addEventListener("click", function () {
     renderFiles();
 });
 
-
 renderFiles();
-
 
 /* NOTES */
 
@@ -917,14 +800,11 @@ let editorStatus = document.getElementById("editor-status");
 
 let editorFolder = [];
 
-
 function editorMessage(text) {
     editorStatus.textContent = text;
 }
 
-
 function openFile(name) {
-
     let folder = getNode(currentPath);
 
     if (!folder || !folder.children[name]) {
@@ -947,11 +827,9 @@ function openFile(name) {
     openApp("notes");
 }
 
-
 /* NEW NOTE */
 
 document.getElementById("editor-new").addEventListener("click", function () {
-
     notes.value = "";
     fileName.value = "UNTITLED.TXT";
 
@@ -960,11 +838,9 @@ document.getElementById("editor-new").addEventListener("click", function () {
     editorMessage("New file");
 });
 
-
 /* SAVE NOTE */
 
 document.getElementById("editor-save").addEventListener("click", function () {
-
     let name = fileName.value.trim().toUpperCase();
 
     if (!name) {
@@ -996,11 +872,9 @@ document.getElementById("editor-save").addEventListener("click", function () {
     renderFiles();
 });
 
-
 /* DOWNLOAD NOTE */
 
 document.getElementById("editor-download").addEventListener("click", async function () {
-
     let name = fileName.value.trim().toUpperCase();
 
     if (!name.includes(".")) {
@@ -1008,7 +882,6 @@ document.getElementById("editor-download").addEventListener("click", async funct
     }
 
     try {
-
         const downloads = await claude.use("downloads");
 
         if (!downloads) {
@@ -1022,42 +895,30 @@ document.getElementById("editor-download").addEventListener("click", async funct
         });
 
         editorMessage("Downloaded " + name);
-
     } catch {
-
         editorMessage("Download cancelled");
     }
 });
-
 
 /* CALCULATOR */
 
 let calculator = document.getElementById("calculator-display");
 
 document.querySelectorAll(".calculator-buttons button").forEach(function (button) {
-
     button.addEventListener("click", function () {
-
         let value = button.textContent;
 
         if (value === "C") {
-
             calculator.value = "";
-
         } else if (value === "=") {
-
             calculate();
-
         } else {
-
             calculator.value += value;
         }
     });
 });
 
-
 function calculate() {
-
     let expression = calculator.value;
 
     if (!expression) {
@@ -1070,50 +931,41 @@ function calculate() {
     }
 
     try {
-
         calculator.value = Function(
             "return " + expression
         )();
-
     } catch {
-
         calculator.value = "ERROR";
     }
 }
-
 
 /* BROWSER */
 
 let address = document.getElementById("address");
 let browserPage = document.querySelector(".browser-page");
 
-
 document.querySelector(".address-bar button:last-child")
     .addEventListener("click", function () {
-
         openWebsite();
     });
 
-
 address.addEventListener("keydown", function (event) {
-
     if (event.key === "Enter") {
         openWebsite();
     }
 });
 
-
 function openWebsite() {
-
     let url = address.value.trim();
 
     if (!url) {
         return;
     }
 
-    if (!url.startsWith("http://") &&
-        !url.startsWith("https://")) {
-
+    if (
+        !url.startsWith("http://") &&
+        !url.startsWith("https://")
+    ) {
         url = "https://" + url;
     }
 
@@ -1122,11 +974,9 @@ function openWebsite() {
     window.open(url, "_blank");
 }
 
-
 /* ESC KEY */
 
 document.addEventListener("keydown", function (event) {
-
     if (event.key === "Escape") {
         startMenu.style.display = "none";
     }
