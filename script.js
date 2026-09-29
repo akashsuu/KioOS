@@ -24,7 +24,8 @@ const apps = {
     browser: "browser-window",
     notes: "notes-window",
     calculator: "calculator-window",
-    settings: "settings-window"
+    settings: "settings-window",
+    paint: "paint-window"
 };
 
 document.querySelectorAll("[data-app]").forEach(function (item) {
@@ -119,20 +120,20 @@ function addTaskbarApp(name) {
         terminal: "icon/icons8-terminal-50.png",
         settings: "icon/icons8-setting-50.png",
         browser: "icon/icons8-browser-50.png",
-        notes: "icon/icons8-note-50.png"
+        notes: "icon/icons8-note-50.png",
+        paint: "icon/icons8-paint-64.png"
     };
 
     let button = document.createElement("button");
-
     button.className = "taskbar-app";
     button.dataset.task = id;
 
-    let img = document.createElement("img");
-
-    img.src = icons[name];
-    img.alt = name;
-
-    button.appendChild(img);
+    if (icons[name]) {
+        let img = document.createElement("img");
+        img.src = icons[name];
+        img.alt = name;
+        button.appendChild(img);
+    }
 
     button.addEventListener("click", function () {
         let win = document.getElementById(id);
@@ -954,6 +955,147 @@ address.addEventListener("keydown", function (event) {
         openWebsite();
     }
 });
+
+
+/* PAINT */
+
+var canvas = document.getElementById("paint-canvas");
+var ctx = canvas.getContext("2d");
+var colorPicker = document.getElementById("paint-color");
+var sizeSlider = document.getElementById("paint-size");
+var status = document.querySelector(".paint-status");
+
+var tool = "pencil";
+var isDrawing = false;
+var undoList = [];
+var undoPos = -1;
+
+// fill canvas white at start
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+// save current drawing so we can undo later
+function saveStep() {
+    undoList = undoList.slice(0, undoPos + 1);
+    undoList.push(canvas.toDataURL());
+    undoPos++;
+    if (undoList.length > 30) {
+        undoList.shift();
+        undoPos--;
+    }
+}
+
+saveStep();
+
+// get where the mouse is on the canvas
+function getPos(e) {
+    var box = canvas.getBoundingClientRect();
+    var x = (e.clientX - box.left) * (canvas.width / box.width);
+    var y = (e.clientY - box.top) * (canvas.height / box.height);
+    return { x: x, y: y };
+}
+
+// mouse pressed, start drawing
+canvas.addEventListener("mousedown", function(e) {
+    isDrawing = true;
+    var pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    e.preventDefault();
+});
+
+// mouse moving, draw line
+canvas.addEventListener("mousemove", function(e) {
+    if (!isDrawing) return;
+    var pos = getPos(e);
+    ctx.lineWidth = sizeSlider.value;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    if (tool == "eraser") {
+        ctx.strokeStyle = "white";
+    } else {
+        ctx.strokeStyle = colorPicker.value;
+    }
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    e.preventDefault();
+});
+
+// mouse released, stop drawing
+canvas.addEventListener("mouseup", function() {
+    if (!isDrawing) return;
+    isDrawing = false;
+    ctx.closePath();
+    saveStep();
+});
+
+canvas.addEventListener("mouseleave", function() {
+    if (!isDrawing) return;
+    isDrawing = false;
+    ctx.closePath();
+    saveStep();
+});
+
+// pencil button
+document.getElementById("paint-pencil").addEventListener("click", function() {
+    tool = "pencil";
+    this.classList.add("active");
+    document.getElementById("paint-eraser").classList.remove("active");
+    status.textContent = "KioPaint | Pencil | Size: " + sizeSlider.value;
+});
+
+// eraser button
+document.getElementById("paint-eraser").addEventListener("click", function() {
+    tool = "eraser";
+    this.classList.add("active");
+    document.getElementById("paint-pencil").classList.remove("active");
+    status.textContent = "KioPaint | Eraser | Size: " + sizeSlider.value;
+});
+
+// size slider
+sizeSlider.addEventListener("input", function() {
+    var toolName = tool == "eraser" ? "Eraser" : "Pencil";
+    status.textContent = "KioPaint | " + toolName + " | Size: " + sizeSlider.value;
+});
+
+// undo button
+document.getElementById("paint-undo").addEventListener("click", function() {
+    if (undoPos <= 0) return;
+    undoPos--;
+    var img = new Image();
+    img.onload = function() { ctx.drawImage(img, 0, 0); };
+    img.src = undoList[undoPos];
+});
+
+// redo button
+document.getElementById("paint-redo").addEventListener("click", function() {
+    if (undoPos >= undoList.length - 1) return;
+    undoPos++;
+    var img = new Image();
+    img.onload = function() { ctx.drawImage(img, 0, 0); };
+    img.src = undoList[undoPos];
+});
+
+// clear button
+document.getElementById("paint-clear").addEventListener("click", function() {
+    if (!confirm("Clear the canvas?")) return;
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    saveStep();
+});
+
+// save as png
+document.getElementById("paint-save").addEventListener("click", function() {
+    var link = document.createElement("a");
+    link.download = "drawing.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+});
+
+// pencil is selected by default
+document.getElementById("paint-pencil").classList.add("active");
+status.textContent = "KioPaint | Pencil | Size: " + sizeSlider.value;
+
 
 function openWebsite() {
     let url = address.value.trim();

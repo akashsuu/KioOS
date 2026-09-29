@@ -20,27 +20,32 @@
             <div class="icon"><img src="icon/icons8-file-128.png"></div>
             <span>FILES</span>
         </div>
-    <div class="desktop-icon" data-app="calculator">
-        <div class="icon"><img src="icon/icons8-calculator-48.png"></div>
-        <span>CALC</span>
+        <div class="desktop-icon" data-app="calculator">
+            <div class="icon"><img src="icon/icons8-calculator-48.png"></div>
+            <span>CALC</span>
+        </div>
+        <div class="desktop-icon" data-app="terminal">
+            <div class="icon"><img src="icon/icons8-terminal-50.png"></div>
+            <span>TERMINAL</span>
+        </div>
+        <div class="desktop-icon" data-app="settings">
+            <div class="icon"><img src="icon/icons8-setting-50.png"></div>
+            <span>SETTINGS</span>
+        </div>
+        <div class="desktop-icon" data-app="browser">
+            <div class="icon"><img src="icon/icons8-browser-50.png"></div>
+            <span>BROWSER</span>
+        </div>
+        <div class="desktop-icon" data-app="notes">
+            <div class="icon"><img src="icon/icons8-note-50.png"></div>
+            <span>NOTES</span>
+        </div>
+        <div class="desktop-icon" data-app="paint">
+            <div class="icon"><img src="icon/icons8-paint-64.png"></div>
+            <span>PAINT</span>
+        </div>
     </div>
-<div class="desktop-icon" data-app="terminal">
-    <div class="icon"><img src="icon/icons8-terminal-50.png"></div>
-    <span>TERMINAL</span>
-</div>
-<div class="desktop-icon" data-app="settings">
-    <div class="icon"><img src="icon/icons8-setting-50.png"></div>
-    <span>SETTINGS</span>
-</div>
-<div class="desktop-icon" data-app="browser">
-    <div class="icon"><img src="icon/icons8-browser-50.png"></div>
-    <span>BROWSER</span>
-</div>
-<div class="desktop-icon" data-app="notes">
-    <div class="icon"><img src="icon/icons8-note-50.png"></div>
-    <span>NOTES</span>
-</div>
-</div>
+
 <!--files-->
 <section class="window" id="files-window">
     <div class="window-title">
@@ -158,6 +163,65 @@
     </div>
 </div>
 </section>
+<!--paint-->
+<section class="window" id="paint-window">
+
+    <div class="window-title">
+        <span>KioPaint</span>
+
+        <div class="window-buttons">
+            <button>_</button>
+            <button>□</button>
+            <button>X</button>
+        </div>
+    </div>
+
+    <div class="paint-app">
+
+        <div class="paint-toolbar">
+
+            <button id="paint-pencil">PENCIL</button>
+            <button id="paint-eraser">ERASER</button>
+
+            <label>
+                SIZE
+                <input
+                    type="range"
+                    id="paint-size"
+                    min="1"
+                    max="50"
+                    value="5"
+                >
+            </label>
+
+            <label>
+                COLOR
+                <input
+                    type="color"
+                    id="paint-color"
+                    value="#000000">
+            </label>
+
+            <button id="paint-undo">↩ UNDO</button>
+            <button id="paint-redo">↪ REDO</button>
+            <button id="paint-clear">CLEAR</button>
+            <button id="paint-save">SAVE PNG</button>
+
+        </div>
+        <div class="paint-canvas-container">
+            <canvas
+                id="paint-canvas"
+                width="900"
+                height="550">
+            </canvas>
+        </div>
+        <div class="paint-status">
+            KioPaint | Pencil | Size:
+            <span id="paint-size-value">5</span>
+        </div>
+    </div>
+
+</section>
 <!--settings-->
 <section class="window" id="settings-window">
     <div class="window-title">
@@ -184,6 +248,7 @@
         <button data-app="notes">[N] NOTEPAD</button>
         <button data-app="calculator">[#] CALCULATOR</button>
         <button data-app="settings">[*] SETTINGS</button>
+        <button data-app="paint">[P] PAINT</button>
     </div>
 <div class="start-footer">KioOS v0.1</div>
 </div>
